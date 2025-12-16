@@ -6,6 +6,8 @@ const _ = require('lodash')
 const path = require("path");
 const fs = require("fs");
 const { districts } = require("../common");
+const Decimal = require('decimal.js');
+
 
 exports.validateLead = (req, res, next) => {
     // email is not null, valid and normalized
@@ -299,3 +301,57 @@ exports.validateProduct = async (req, res, next) => {
     }
     next()
 }
+
+exports.validateItem = (req, res, next) => {
+    req.check("name", "Name is required").notEmpty();
+    req.check("name", "Name must be a non-empty string").isString();
+    
+    req.check("price", "Price is required").notEmpty();
+    req.check("price", "Price must be a valid number").custom((value) => {
+        try {
+            const price = new Decimal(value);
+            if (price.isNaN() || price.lte(0)) {
+                return false;
+            }
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }).withMessage("Price must be a positive valid decimal number");
+    
+    const errors = req.validationErrors();
+    if (errors) {
+        errorHandler();
+        const firstError = errors.map(error => error.msg)[0];
+        return res.status(400).json({ error: firstError });
+    }
+    next();
+};
+
+exports.validateItemUpdate = (req, res, next) => {
+    if (req.body.name !== undefined) {
+        req.check("name", "Name must be a non-empty string").notEmpty().isString();
+    }
+    
+    if (req.body.price !== undefined) {
+        req.check("price", "Price must be a valid number").custom((value) => {
+            try {
+                const price = new Decimal(value);
+                if (price.isNaN() || price.lte(0)) {
+                    return false;
+                }
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }).withMessage("Price must be a positive valid decimal number");
+    }
+    
+    const errors = req.validationErrors();
+    if (errors) {
+        errorHandler();
+        const firstError = errors.map(error => error.msg)[0];
+        return res.status(400).json({ error: firstError });
+    }
+    next();
+};

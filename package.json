@@ -20,6 +20,7 @@
     "concurrently": "^8.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "decimal.js": "^10.6.0",
     "dotenv": "^16.4.5",
     "ethers": "^5.6.9",
     "express": "^4.19.2",
@@ -49,6 +50,7 @@
   },
   "scripts": {
     "dev": "concurrently \"node server/server.js\" \"vite\"",
+    "dev:server": "node server/server.js",
     "build": "vite build",
     "preview": "vite preview",
     "start": "npm run dev"
