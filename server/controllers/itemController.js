@@ -40,6 +40,8 @@ exports.deleteItem = asyncErrorHandler(async (req, res, next) => {
     const id = parseInt(req.params.id);
     await itemService.deleteItem(id);
     
-    res.status(200);
+    res.status(200).json({
+        success: true
+    });
 });
 
